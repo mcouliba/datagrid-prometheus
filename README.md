@@ -1,8 +1,19 @@
-# Red Hat Data Grid / Infinispan - JMX Exporter Prometheus Metrics
+Data Grid / Infinispan - JMX Exporter Prometheus Metrics
+================================================================
+
+This project builds a custom image of Red Hat Data Grid / Infinispan in order to gather metrics using Prometheus (open source monitoring and alerting toolkit) and display them in Grafana.
 
 ## Prerequisites
-Prometheus
-Grafana
+
+* Requires Openshift Container Platform 3.9 or greater with Prometheus and Grafana installed
+* Requires JBoss Data Grid 7.2 image and associated templates deployed on OCP
+
+## Clone the GitHub repository and create the Openshift project
+
+```
+    git clone https://github.com/mcouliba/datagrid-prometheus.git
+    cd datagrid-prometheus
+```
 
 ## Creating the new image for Red Hat Data Grid / Infinispan
 
