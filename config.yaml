@@ -1,0 +1,21 @@
+---
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+whitelistObjectNames: 
+  - "jboss.datagrid-infinispan:type=Cache,name=*,manager=*,component=Statistics"
+  - "jboss.datagrid-infinispan:type=Cache,name=*,manager=*,component=Cache"
+rules:
+  - pattern: "^jboss.datagrid-infinispan<type=Cache, name=\"(.+)\\(.+\\)\", manager=\"(.+)\", component=Statistics><>(.+):(.+)"
+    attrNameSnakeCase: true
+    name: datagrid_cache_$3
+    labels:
+      name: $1
+      container: $2
+    help: Datagrid/Infinispan "$3" cache metric
+  - pattern: "^jboss.datagrid-infinispan<type=Cache,name=\".+\",manager=\"(.+)\",component=Cache><>cacheName:"
+    attrNameSnakeCase: true
+    name: datagrid_caches
+    labels:
+      container: $1
+    help: Datagrid/Infinispan caches
+      
