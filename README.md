@@ -10,74 +10,76 @@ This project builds a custom image of Red Hat Data Grid / Infinispan in order to
 
 ## Build and configure Data Grid
 
-Clone the GitHub project in your local environment
+* Clone the GitHub project in your local environment
 ```
-    git clone https://github.com/mcouliba/datagrid-prometheus.git
-    cd datagrid-prometheus
-```
-
-Create a new project (or use an existing)
-```
-    oc new-project datagrid
+git clone https://github.com/mcouliba/datagrid-prometheus.git
+cd datagrid-prometheus
 ```
 
-Build the custom Data Grid image including JMX Exporter Prometheus
+* Create a new project (or use an existing)
 ```
-    oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid72-prometheus --strategy=docker
-      
+oc new-project datagrid
 ```
 
-Create the ConfigMap with JMX Exporter parameters
+* Build the custom Data Grid image including JMX Exporter Prometheus
 ```
-    oc create configmap datagrid-prometheus --from-file=config.yaml
+oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid72-prometheus --strategy=docker
+```
+
+* Create the ConfigMap with JMX Exporter parameters
+```
+oc create configmap datagrid-prometheus --from-file=config.yaml
 ```
 
 ## Deploy and run Data Grid
-create the template for the custom image  
-```    
-    oc create -f datagrid72-prometheus-basic.yaml
-    oc describe template datagrid72-prometheus-basic
+* Create the template _"datagrid72-prometheus-basic"_
+```      
+oc create -f datagrid72-prometheus-basic.yaml
+oc describe template datagrid72-prometheus-basic
 ```
 
-Deploy the custom image using the imported template 
+* Deploy the custom image using the imported template 
 ```    
-    oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
-      -p USERNAME=developer -p PASSWORD=developer -p IMAGE_STREAM_NAMESPACE=datagrid \
-      -e CACHE_NAMES=mycache -e MYCACHE_CACHE_START=EAGER
+oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
+  -p USERNAME=developer -p PASSWORD=developer -p IMAGE_STREAM_NAMESPACE=datagrid \
+  -e CACHE_NAMES=mycache -e MYCACHE_CACHE_START=EAGER
 ```
 
 ## Configure Prometheus
-Update the _"prometheus.yml"_ file into the _"prometheus"_ ConfigMap as following. 
+* Update the _"prometheus.yml"_ file into the _"prometheus"_ ConfigMap as following. 
 We are going to collect metrics from all pods with a port name called _"prometheus"_ of the the project _"datagrid"_.
 ```
-    oc describe configmap prometheus -n openshift-metrics
+oc describe configmap prometheus -n openshift-metrics
 
-    Data
-    ====
-    prometheus.yml:
-    ----
-    scrape_configs:
-    - job_name: 'datagrid-prometheus-metrics'
-      kubernetes_sd_configs:
-      - role: endpoints
-        namespaces:
-          names:
-          - datagrid
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_container_port_name]
-        action: keep
-        regex: prometheus
+Data
+====
+prometheus.yml:
+----
+scrape_configs:
+- job_name: 'datagrid-prometheus-metrics'
+  kubernetes_sd_configs:
+  - role: endpoints
+    namespaces:
+      names:
+      - datagrid
+  relabel_configs:
+  - source_labels: [__meta_kubernetes_pod_container_port_name]
+    action: keep
+    regex: prometheus
 ```
-Check the targets in Prometheus
-url: https://prometheus-openshift-metrics.example.org/targets
+
+* Check the targets in Prometheus (_https://prometheus-openshift-metrics.example.org/targets_)
 ![](images/pods-target.png)
 
 ## Configure Grafana
-Create/edit datasource for Prometheus
+* Create/edit datasource for Prometheus
 ![](images/grafana-create-datasources.png)
-> url = _https://prometheus-openshift-metrics.example.org_
-> Token = Result of the command `oc sa get-token prometheus-reader -n openshift-metrics`
-Import the dashboard datagrid-grafana-dashboard.json
+| Parameter | Value |
+| --- | --- |
+| URL | _https://prometheus-openshift-metrics.example.org_ |
+| Token | Result of the command `oc sa get-token prometheus-reader -n openshift-metrics` |
+
+* Import the dashboard _datagrid-grafana-dashboard.json_
 ![](images/grafana-import-dashboard.png)
 
 ## Congratulations!
