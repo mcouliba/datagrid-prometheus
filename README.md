@@ -77,10 +77,10 @@ scrape_configs:
 | URL | https://prometheus-openshift-metrics.example.org |
 | Token | Result of the command `oc sa get-token prometheus-reader -n openshift-metrics` |
 
-![](images/grafana-create-datasources.png)
+![](images/grafana-create-datasources.png =500x700)
 
 #### Import the dashboard _datagrid-grafana-dashboard.json_
-![](images/grafana-import-dashboard.png)
+![](images/grafana-import-dashboard.png =100x100)
 
 ## Congratulations
 #### You are now displaying Data Grid metrics using Prometheus and Grafana.
