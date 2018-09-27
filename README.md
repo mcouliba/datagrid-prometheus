@@ -10,23 +10,23 @@ This project builds a custom image of Red Hat Data Grid / Infinispan in order to
 
 ## Build and configure Data Grid
 
-* Clone the GitHub project in your local environment
+###### Clone the GitHub project in your local environment
 ```
 git clone https://github.com/mcouliba/datagrid-prometheus.git
 cd datagrid-prometheus
 ```
 
-* Create a new project (or use an existing)
+###### Create a new project (or use an existing)
 ```
 oc new-project datagrid
 ```
 
-* Build the custom Data Grid image including JMX Exporter Prometheus
+###### Build the custom Data Grid image including JMX Exporter Prometheus
 ```
 oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid72-prometheus --strategy=docker
 ```
 
-* Create the ConfigMap with JMX Exporter parameters
+###### Create the ConfigMap with JMX Exporter parameters
 ```
 oc create configmap datagrid-prometheus --from-file=config.yaml
 ```
@@ -46,8 +46,8 @@ oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
 ```
 
 ## Configure Prometheus
-* Update the _"prometheus.yml"_ file into the _"prometheus"_ ConfigMap as following. 
-We are going to collect metrics from all pods with a port name called _"prometheus"_ of the the project _"datagrid"_.
+* Update the _prometheus.yml_ file into the _prometheus_ ConfigMap as following. 
+We are going to collect metrics from all pods with a port name called _"prometheus"_ of the the project _datagrid_.
 ```
 oc describe configmap prometheus -n openshift-metrics
 
@@ -68,20 +68,21 @@ scrape_configs:
     regex: prometheus
 ```
 
-* Check the targets in Prometheus (_https://prometheus-openshift-metrics.example.org/targets_)
+* Check the targets in Prometheus https://prometheus-openshift-metrics.example.org/targets
 ![](images/pods-target.png)
 
 ## Configure Grafana
 * Create/edit datasource for Prometheus
 ![](images/grafana-create-datasources.png)
+
 | Parameter | Value |
 | --- | --- |
-| URL | _https://prometheus-openshift-metrics.example.org_ |
+| URL | https://prometheus-openshift-metrics.example.org |
 | Token | Result of the command `oc sa get-token prometheus-reader -n openshift-metrics` |
 
 * Import the dashboard _datagrid-grafana-dashboard.json_
 ![](images/grafana-import-dashboard.png)
 
 ## Congratulations!
-You are now displaying Data Grid metrics using Prometheus and Grafana
+You are now displaying Data Grid metrics using Prometheus and Grafana.
 ![](images/grafana-dashboard.png)
