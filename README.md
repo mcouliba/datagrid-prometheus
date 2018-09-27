@@ -72,7 +72,7 @@ scrape_configs:
 ![](images/pods-target.png)
 
 ## Configure Grafana
-#### Create/edit datasource for Prometheus
+### Create/edit datasource for Prometheus
 | Parameter | Value |
 | --- | --- |
 | URL | https://prometheus-openshift-metrics.example.org |
@@ -80,9 +80,9 @@ scrape_configs:
 
 ![](images/grafana-create-datasources.png)
 
-#### Import the dashboard _datagrid-grafana-dashboard.json_
+### Import the dashboard _datagrid-grafana-dashboard.json_
 ![](images/grafana-import-dashboard.png)
 
-## Congratulations\!
+## Congratulations
 You are now displaying Data Grid metrics using Prometheus and Grafana.
 ![](images/grafana-dashboard.png)
