@@ -85,4 +85,4 @@ scrape_configs:
 
 ## HELLO
 ####You are now displaying Data Grid metrics using Prometheus and Grafana.
-
+![](images/grafana-dashboard.png)
