@@ -46,8 +46,7 @@ oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
 ```
 
 ## Configure Prometheus
-#### Update the _prometheus.yml_ file into the _prometheus_ ConfigMap as following. 
-We are going to collect metrics from all pods with a port name called _"prometheus"_ of the the project _datagrid_.
+#### Update the _prometheus.yml_ file into the _prometheus_ ConfigMap as following to collect metrics from all pods with a port name called _"prometheus"_ of the the project _datagrid_.
 ```
 oc describe configmap prometheus -n openshift-metrics
 
