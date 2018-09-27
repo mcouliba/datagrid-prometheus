@@ -8,103 +8,78 @@ This project builds a custom image of Red Hat Data Grid / Infinispan in order to
 * Requires Openshift Container Platform 3.9 or greater with Prometheus and Grafana installed
 * Requires JBoss Data Grid 7.2 image and associated templates deployed on OCP
 
-## Clone the GitHub repository and create the Openshift project
+## Build and configure Data Grid
 
+Clone the GitHub project in your local environment
 ```
     git clone https://github.com/mcouliba/datagrid-prometheus.git
     cd datagrid-prometheus
 ```
 
-## Creating the new image for Red Hat Data Grid / Infinispan
-
+Create a new project (or use an existing)
 ```
-    oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid-prometheus --strategy=docker
-    oc start-build datagrid-prometheus --from-dir=.
+    oc new-project datagrid
 ```
 
-## Creating the ConfigMap with JMX Exporter parameter
+Build the custom Data Grid image including JMX Exporter Prometheus
+```
+    oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid72-prometheus --strategy=docker
+      
+```
 
+Create the ConfigMap with JMX Exporter parameters
 ```
     oc create configmap datagrid-prometheus --from-file=config.yaml
 ```
 
-## Deploying and update the Deployment Config
-    
-```
-	oc rollout pause dc/datagrid-app
-	oc set image dc/datagrid-app datagrid-app=playingdatagrid/datagrid-prometheus:latest
-	oc volume dc/datagrid-app --add --name=prometheus-volume --mount-path=/opt/datagrid/prometheus --configmap-name=datagrid-prometheus
-    oc set env dc/datagrid-app JAVA_OPTS_APPEND="-javaagent:/opt/datagrid/jmx-prometheus.jar=9404:/opt/datagrid/prometheus/config.yaml"
-    oc rollout resume dc/datagrid-app
+## Deploy and run Data Grid
+create the template for the custom image  
+```    
+    oc create -f datagrid72-prometheus-basic.yaml
+    oc describe template datagrid72-prometheus-basic
 ```
 
-- containerPort: 9404
-  name: prothemeus
-  protocol: TCP
-
-
-## Updating Services
-```
-	oc create service clusterip datagrid-app-prometheus --tcp=9404:9404
+Deploy the custom image using the imported template 
+```    
+    oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
+      -p USERNAME=developer -p PASSWORD=developer -p IMAGE_STREAM_NAMESPACE=datagrid \
+      -e CACHE_NAMES=mycache -e MYCACHE_CACHE_START=EAGER
 ```
 
-apiVersion: v1
-kind: Service
-metadata:
-  creationTimestamp: '2018-09-13T18:20:52Z'
-  labels:
-    app: datagrid-app
-  name: datagrid-app-prometheus
-  namespace: playingdatagrid
-  resourceVersion: '68460648'
-  selfLink: /api/v1/namespaces/playingdatagrid/services/datagrid-app-prometheus
-  uid: bf3da504-b781-11e8-99db-5254001ff7d1
-spec:
-  clusterIP: 172.30.212.196
-  ports:
-    - name: 9404-tcp
-      port: 9404
-      protocol: TCP
-      targetPort: 9404
-  selector:
-    deploymentConfig: datagrid-app
-  sessionAffinity: None
-  type: ClusterIP
-status:
-  loadBalancer: {}
+## Configure Prometheus
+Update the _"prometheus.yml"_ file into the _"prometheus"_ ConfigMap as following. 
+We are going to collect metrics from all pods with a port name called _"prometheus"_ of the the project _"datagrid"_.
+```
+    oc describe configmap prometheus -n openshift-metrics
 
-
-## Updating Prometheus CM
-
-- job_name: 'datagrid-metrics'
-  kubernetes_sd_configs:
-  - role: endpoints
-    namespaces:
-      names:
-      - playingdatagrid
-  relabel_configs:
-  - source_labels: [__meta_kubernetes_service_name]
-    action: keep
-    regex: datagrid-app-prometheus
-  - source_labels: [__meta_kubernetes_pod_container_port_name]
-    action: keep
-    regex: prometheus
-
-
-## Check the targets in Prometheus
-
+    Data
+    ====
+    prometheus.yml:
+    ----
+    scrape_configs:
+    - job_name: 'datagrid-prometheus-metrics'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - datagrid
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        action: keep
+        regex: prometheus
+```
+Check the targets in Prometheus
 url: https://prometheus-openshift-metrics.example.org/targets
+![](images/pods-target.png)
 
-![](images/service-target.png)
+## Configure Grafana
+Create/edit datasource for Prometheus
+![](images/grafana-create-datasources.png)
+> url = _https://prometheus-openshift-metrics.example.org_
+> Token = Result of the command `oc sa get-token prometheus-reader -n openshift-metrics`
+Import the dashboard datagrid-grafana-dashboard.json
+![](images/grafana-import-dashboard.png)
 
-
-## Grafana
-Add datasources for Prometheus
-Add dashboard
-
-
-
-
-# Reference
-
-* https://github.com/prometheus/jmx_exporter
+## Congratulations!
+You are now displaying Data Grid metrics using Prometheus and Grafana
+![](images/grafana-dashboard.png)
