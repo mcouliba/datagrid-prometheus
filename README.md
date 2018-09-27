@@ -72,15 +72,14 @@ scrape_configs:
 ![](images/pods-target.png)
 
 ## Configure Grafana
-* Create/edit datasource for Prometheus
-![](images/grafana-create-datasources.png)
-
+##### Create/edit datasource for Prometheus
 | Parameter | Value |
 | --- | --- |
 | URL | https://prometheus-openshift-metrics.example.org |
 | Token | Result of the command `oc sa get-token prometheus-reader -n openshift-metrics` |
+![](images/grafana-create-datasources.png)
 
-* Import the dashboard _datagrid-grafana-dashboard.json_
+##### Import the dashboard datagrid-grafana-dashboard.json
 ![](images/grafana-import-dashboard.png)
 
 ## Congratulations!
