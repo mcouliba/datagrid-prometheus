@@ -10,18 +10,18 @@ This project builds a custom image of Red Hat Data Grid / Infinispan in order to
 
 ## Build and configure Data Grid
 
-###### Clone the GitHub project in your local environment
+### Clone the GitHub project in your local environment
 ```
 git clone https://github.com/mcouliba/datagrid-prometheus.git
 cd datagrid-prometheus
 ```
 
-###### Create a new project (or use an existing)
+#### Create a new project (or use an existing)
 ```
 oc new-project datagrid
 ```
 
-###### Build the custom Data Grid image including JMX Exporter Prometheus
+##### Build the custom Data Grid image including JMX Exporter Prometheus
 ```
 oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid72-prometheus --strategy=docker
 ```
