@@ -83,6 +83,6 @@ scrape_configs:
 #### Import the dashboard _datagrid-grafana-dashboard.json_
 ![](images/grafana-import-dashboard.png)
 
-## HELLO
-####You are now displaying Data Grid metrics using Prometheus and Grafana.
+## Congratulations
+#### You are now displaying Data Grid metrics using Prometheus and Grafana.
 ![](images/grafana-dashboard.png)
