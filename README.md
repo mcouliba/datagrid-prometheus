@@ -10,7 +10,7 @@ This project builds a custom image of Red Hat Data Grid / Infinispan in order to
 
 ## Build and configure Data Grid
 
-### Clone the GitHub project in your local environment
+#### Clone the GitHub project in your local environment
 ```
 git clone https://github.com/mcouliba/datagrid-prometheus.git
 cd datagrid-prometheus
@@ -21,24 +21,24 @@ cd datagrid-prometheus
 oc new-project datagrid
 ```
 
-##### Build the custom Data Grid image including JMX Exporter Prometheus
+#### Build the custom Data Grid image including JMX Exporter Prometheus
 ```
 oc new-build https://github.com/mcouliba/datagrid-prometheus.git --name=datagrid72-prometheus --strategy=docker
 ```
 
-###### Create the ConfigMap with JMX Exporter parameters
+#### Create the ConfigMap with JMX Exporter parameters
 ```
 oc create configmap datagrid-prometheus --from-file=config.yaml
 ```
 
 ## Deploy and run Data Grid
-* Create the template _"datagrid72-prometheus-basic"_
+#### Create the template _"datagrid72-prometheus-basic"_
 ```      
 oc create -f datagrid72-prometheus-basic.yaml
 oc describe template datagrid72-prometheus-basic
 ```
 
-* Deploy the custom image using the imported template 
+#### Deploy the custom image using the imported template 
 ```    
 oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
   -p USERNAME=developer -p PASSWORD=developer -p IMAGE_STREAM_NAMESPACE=datagrid \
@@ -46,7 +46,7 @@ oc new-app --template=datagrid72-prometheus-basic --name=rhdg \
 ```
 
 ## Configure Prometheus
-* Update the _prometheus.yml_ file into the _prometheus_ ConfigMap as following. 
+#### Update the _prometheus.yml_ file into the _prometheus_ ConfigMap as following. 
 We are going to collect metrics from all pods with a port name called _"prometheus"_ of the the project _datagrid_.
 ```
 oc describe configmap prometheus -n openshift-metrics
@@ -68,11 +68,11 @@ scrape_configs:
     regex: prometheus
 ```
 
-* Check the targets in Prometheus https://prometheus-openshift-metrics.example.org/targets
+#### Check the targets in Prometheus https://prometheus-openshift-metrics.example.org/targets
 ![](images/pods-target.png)
 
 ## Configure Grafana
-### Create/edit datasource for Prometheus
+#### Create/edit datasource for Prometheus
 | Parameter | Value |
 | --- | --- |
 | URL | https://prometheus-openshift-metrics.example.org |
@@ -80,9 +80,10 @@ scrape_configs:
 
 ![](images/grafana-create-datasources.png)
 
-### Import the dashboard _datagrid-grafana-dashboard.json_
+#### Import the dashboard _datagrid-grafana-dashboard.json_
 ![](images/grafana-import-dashboard.png)
 
 ## Congratulations
-You are now displaying Data Grid metrics using Prometheus and Grafana.
+####You are now displaying Data Grid metrics using Prometheus and Grafana.
+
 ![](images/grafana-dashboard.png)
